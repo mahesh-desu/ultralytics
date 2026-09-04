@@ -10,18 +10,19 @@ This is a new objective. Never insert the historical AdamW fitness into the new 
 
 ## Current state
 
-The Vast instance is running six persistent tuning workers:
+The Vast instance is running seven persistent tuning workers:
 
 ```text
 vast-gpu0
 vast-gpu1
+vast-gpu2
 vast-gpu4
 vast-gpu5
 vast-gpu6
 vast-gpu7
 ```
 
-GPUs 2–3 are finishing the YOLO26l/x benchmark jobs. YOLO26m completed at `0.400399` mAP50-95 in 4 h 21 min 0.112 s and GPU 1 was transferred to tuning. When each remaining benchmark has finished, its result JSON contains a full wall time, and its process has exited, add that GPU to tuning. The intended steady state is eight Vast workers, one per GPU.
+GPU 3 is finishing the YOLO26x benchmark. YOLO26m completed at `0.400399` mAP50-95 in 4 h 21 min 0.112 s and YOLO26l completed at `0.407065` in 5 h 11 min 30.136 s; GPUs 1 and 2 were then transferred to tuning. When the remaining benchmark has finished, its result JSON contains a full wall time, and its process has exited, add GPU 3 to tuning. The intended steady state is eight Vast workers, one per GPU.
 
 The cancelled YOLO27s/m/l/x checkpoints are held under:
 
@@ -190,7 +191,7 @@ Then launch only the newly idle GPU indices:
 
 ```bash
 /workspace/ul37-yolo27/.venv/bin/python \
-  /workspace/ul37-oil-experiments/launch_ul37_musgd_workers.py 2 3
+  /workspace/ul37-oil-experiments/launch_ul37_musgd_workers.py 3
 ```
 
 The launcher passes the credential only in each process environment and deletes the temporary file in a `finally` block. Verify the file is absent after launch, all new PIDs are live, logs have reached `Starting iteration`, and `nvidia-smi` shows one training process on each requested GPU.
